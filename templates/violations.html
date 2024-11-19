@@ -1,0 +1,542 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Traffic Violations</h2>
+
+<!-- Register New Vehicle Section -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Register New Vehicle</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" 
+                      action="{{ url_for('violations') }}" 
+                      enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="registration_number" class="form-label">Registration Number</label>
+                                <input type="text" class="form-control" 
+                                       id="registration_number" 
+                                       name="registration_number"
+                                       placeholder="Enter registration number"
+                                       pattern="^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$"
+                                       title="Format: KA01AB1234"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="vehicle_type" class="form-label">Vehicle Type</label>
+                                <select class="form-control" id="vehicle_type" name="vehicle_type" required>
+                                    <option value="" disabled selected>Select vehicle type</option>
+                                    <option value="2-Wheeler">2-Wheeler</option>
+                                    <option value="4-Wheeler">4-Wheeler</option>
+                                    <option value="Heavy Vehicle">Heavy Vehicle</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="make" class="form-label">Make</label>
+                                <input type="text" class="form-control" 
+                                       id="make" 
+                                       name="make"
+                                       placeholder="Enter manufacturer"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="model" class="form-label">Model</label>
+                                <input type="text" class="form-control" 
+                                       id="model" 
+                                       name="model"
+                                       placeholder="Enter model"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="owner_name" class="form-label">Owner Name</label>
+                                <input type="text" class="form-control" 
+                                       id="owner_name" 
+                                       name="owner_name"
+                                       placeholder="Enter owner name"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="owner_phone" class="form-label">Owner Phone</label>
+                                <input type="tel" class="form-control" 
+                                       id="owner_phone" 
+                                       name="owner_phone"
+                                       placeholder="Enter phone number"
+                                       pattern="[0-9]{10}"
+                                       title="Please enter a valid 10-digit phone number"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="owner_address" class="form-label">Owner Address</label>
+                                <textarea class="form-control" 
+                                          id="owner_address" 
+                                          name="owner_address"
+                                          placeholder="Enter address"
+                                          rows="1"
+                                          required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="vehicle_image" class="form-label">Vehicle Image</label>
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="vehicle_image" 
+                                       name="vehicle_image"
+                                       accept="image/*">
+                                <small class="text-muted">Upload an image of the vehicle (optional)</small>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register Vehicle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Record New Violation Section -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Record New Violation</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('violations') }}">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="vehicle_reg" class="form-label">Vehicle Registration</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="vehicle_reg" 
+                                       name="vehicle_reg" 
+                                       placeholder="Enter vehicle number" 
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="violation_type" class="form-label">Violation Type</label>
+                                <select class="form-control" 
+                                        id="violation_type" 
+                                        name="violation_type" 
+                                        required>
+                                    <option value="" disabled selected>Select violation type</option>
+                                    <option value="Speeding">Speeding</option>
+                                    <option value="Red Light Jump">Red Light Jump</option>
+                                    <option value="No Helmet">No Helmet</option>
+                                    <option value="Illegal Parking">Illegal Parking</option>
+                                    <option value="Wrong Way Driving">Wrong Way Driving</option>
+                                    <option value="No License">No License</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="fine_amount" class="form-label">Fine Amount</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="fine_amount" 
+                                       name="fine_amount" 
+                                       placeholder="Enter fine amount"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="officer_id" class="form-label">Officer</label>
+                                <select class="form-control" 
+                                        id="officer_id" 
+                                        name="officer_id" 
+                                        required>
+                                    <option value="" disabled selected>Select officer</option>
+                                    {% for officer in officers %}
+                                        <option value="{{ officer.OfficerID }}">{{ officer.Name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Record Violation</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Violations List -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>All Violations</h4>
+            </div>
+            <div class="card-body">
+                {% if violations %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Vehicle</th>
+                                    <th>Owner Details</th>
+                                    <th>Violation Type</th>
+                                    <th>Fine Amount</th>
+                                    <th>Officer</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for violation in violations %}
+                                <tr>
+                                    <td>{{ violation.Timestamp }}</td>
+                                    <td>
+                                        {{ violation.RegistrationNumber }}<br>
+                                        <small class="text-muted">{{ violation.Make }} {{ violation.Model }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ violation.OwnerName }}</strong><br>
+                                        <small>{{ violation.OwnerPhone }}</small>
+                                    </td>
+                                    <td>{{ violation.ViolationType }}</td>
+                                    <td>${{ violation.FineAmount }}</td>
+                                    <td>{{ violation.OfficerName or 'N/A' }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 
+                                            'success' if violation.Status == 'Paid' 
+                                            else 'warning' 
+                                        }}">
+                                            {{ violation.Status or 'Pending' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" 
+                                                    data-bs-toggle="dropdown">
+                                                Update Status
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <form action="{{ url_for('update_violation_status', violation_id=violation.ViolationID) }}" 
+                                                          method="POST">
+                                                        <input type="hidden" name="status" value="Pending">
+                                                        <button type="submit" class="dropdown-item">Mark as Pending</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form action="{{ url_for('update_violation_status', violation_id=violation.ViolationID) }}" 
+                                                          method="POST">
+                                                        <input type="hidden" name="status" value="Paid">
+                                                        <button type="submit" class="dropdown-item">Mark as Paid</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form action="{{ url_for('update_violation_status', violation_id=violation.ViolationID) }}" 
+                                                          method="POST"
+                                                          onsubmit="return confirm('Are you sure you want to cancel this violation? This will remove it from the records.');">
+                                                        <input type="hidden" name="status" value="Cancelled">
+                                                        <button type="submit" class="dropdown-item text-danger">Cancel Violation</button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>No violations recorded yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add this after the Violations List section -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Registered Vehicles</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Registration Number</th>
+                                <th>Image</th>
+                                <th>Type</th>
+                                <th>Make & Model</th>
+                                <th>Owner Details</th>
+                                <th>Violations</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vehicle in vehicles %}
+                                <tr>
+                                    <td>{{ vehicle.RegistrationNumber }}</td>
+                                    <td>
+                                        {% if vehicle.ImagePath %}
+                                            <img src="{{ url_for('static', filename='vehicle_images/' + vehicle.ImagePath) }}" 
+                                                 class="img-thumbnail vehicle-thumbnail" 
+                                                 data-bs-toggle="modal" 
+                                                 data-bs-target="#imageModal{{ vehicle.VehicleID }}"
+                                                 style="cursor: pointer; max-height: 60px;">
+                                        {% else %}
+                                            <span class="text-muted">No image uploaded</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ vehicle.Type }}</td>
+                                    <td>{{ vehicle.Make }} {{ vehicle.Model }}</td>
+                                    <td>
+                                        <strong>{{ vehicle.OwnerName }}</strong><br>
+                                        <small>{{ vehicle.OwnerPhone }}</small><br>
+                                        <small class="text-muted">{{ vehicle.OwnerAddress }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'warning' if vehicle.ViolationCount > 0 else 'success' }}">
+                                            {{ vehicle.ViolationCount }} violation{{ 's' if vehicle.ViolationCount != 1 }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-primary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#editModal{{ vehicle.VehicleID }}">
+                                                Edit
+                                            </button>
+                                            {% if vehicle.ViolationCount == 0 %}
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-danger" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#deleteModal{{ vehicle.VehicleID }}">
+                                                    Delete
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add the edit and delete modals -->
+{% for vehicle in vehicles %}
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal{{ vehicle.VehicleID }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Vehicle: {{ vehicle.RegistrationNumber }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ url_for('edit_vehicle', vehicle_id=vehicle.VehicleID) }}" 
+                      method="POST" 
+                      enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Registration Number</label>
+                                    <input type="text" class="form-control" value="{{ vehicle.RegistrationNumber }}" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Vehicle Type</label>
+                                    <select class="form-control" name="vehicle_type" required>
+                                        <option value="2-Wheeler" {{ 'selected' if vehicle.Type == '2-Wheeler' }}>2-Wheeler</option>
+                                        <option value="4-Wheeler" {{ 'selected' if vehicle.Type == '4-Wheeler' }}>4-Wheeler</option>
+                                        <option value="Heavy Vehicle" {{ 'selected' if vehicle.Type == 'Heavy Vehicle' }}>Heavy Vehicle</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Make</label>
+                                    <input type="text" class="form-control" name="make" value="{{ vehicle.Make }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Model</label>
+                                    <input type="text" class="form-control" name="model" value="{{ vehicle.Model }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Owner Name</label>
+                                    <input type="text" class="form-control" name="owner_name" value="{{ vehicle.OwnerName }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Owner Phone</label>
+                                    <input type="tel" class="form-control" name="owner_phone" value="{{ vehicle.OwnerPhone }}" pattern="[0-9]{10}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Owner Address</label>
+                                    <textarea class="form-control" name="owner_address" rows="2" required>{{ vehicle.OwnerAddress }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Image Section -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Vehicle Image</label>
+                                    {% if vehicle.ImagePath %}
+                                        <div class="mb-3">
+                                            <img src="{{ url_for('static', filename='vehicle_images/' + vehicle.ImagePath) }}" 
+                                                 class="img-thumbnail" 
+                                                 style="max-height: 200px;">
+                                            <div class="mt-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" 
+                                                           type="checkbox" 
+                                                           name="delete_image" 
+                                                           id="deleteImage{{ vehicle.VehicleID }}">
+                                                    <label class="form-check-label text-danger" 
+                                                           for="deleteImage{{ vehicle.VehicleID }}">
+                                                        Delete existing image
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    <input type="file" 
+                                           class="form-control" 
+                                           name="vehicle_image"
+                                           accept="image/*">
+                                    <small class="text-muted">
+                                        {% if vehicle.ImagePath %}
+                                            Upload a new image to replace the existing one (optional)
+                                        {% else %}
+                                            Upload a vehicle image (optional)
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal{{ vehicle.VehicleID }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Delete Vehicle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete vehicle with registration number:</p>
+                    <p class="fw-bold">{{ vehicle.RegistrationNumber }}?</p>
+                    <p class="text-muted mb-0">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('delete_vehicle', vehicle_id=vehicle.VehicleID) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Delete Vehicle</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<!-- Add image preview modal for each vehicle -->
+{% for vehicle in vehicles %}
+    {% if vehicle.ImagePath %}
+    <div class="modal fade" id="imageModal{{ vehicle.VehicleID }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Vehicle Image: {{ vehicle.RegistrationNumber }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="{{ url_for('static', filename='vehicle_images/' + vehicle.ImagePath) }}" 
+                         class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endfor %}
+
+<style>
+    .badge {
+        padding: 0.5em 1em;
+    }
+    .bg-warning {
+        background-color: #ffc107 !important;
+        color: #000;
+    }
+    .bg-success {
+        background-color: #198754 !important;
+        color: #fff;
+    }
+    .btn-group {
+        margin-right: 0.5rem;
+    }
+    .dropdown-item {
+        cursor: pointer;
+    }
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+    .vehicle-thumbnail {
+        transition: transform 0.2s;
+    }
+    .vehicle-thumbnail:hover {
+        transform: scale(1.1);
+    }
+</style>
+{% endblock %} 

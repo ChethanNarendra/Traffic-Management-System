@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Vehicle Management</h2>
+
+<!-- Add Vehicle Form -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Register New Vehicle</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="registration_number" class="form-label">Registration Number</label>
+                                <input type="text" class="form-control" 
+                                       id="registration_number" 
+                                       name="registration_number"
+                                       placeholder="Enter registration number"
+                                       pattern="^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$"
+                                       title="Format: KA01AB1234"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="vehicle_type" class="form-label">Vehicle Type</label>
+                                <select class="form-control" id="vehicle_type" name="vehicle_type" required>
+                                    <option value="" disabled selected>Select vehicle type</option>
+                                    <option value="2-Wheeler">2-Wheeler</option>
+                                    <option value="4-Wheeler">4-Wheeler</option>
+                                    <option value="Heavy Vehicle">Heavy Vehicle</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="make" class="form-label">Make</label>
+                                <input type="text" class="form-control" 
+                                       id="make" 
+                                       name="make"
+                                       placeholder="Enter manufacturer"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="model" class="form-label">Model</label>
+                                <input type="text" class="form-control" 
+                                       id="model" 
+                                       name="model"
+                                       placeholder="Enter model"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="owner_name" class="form-label">Owner Name</label>
+                                <input type="text" class="form-control" 
+                                       id="owner_name" 
+                                       name="owner_name"
+                                       placeholder="Enter owner name"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="owner_phone" class="form-label">Owner Phone</label>
+                                <input type="tel" class="form-control" 
+                                       id="owner_phone" 
+                                       name="owner_phone"
+                                       placeholder="Enter phone number"
+                                       pattern="[0-9]{10}"
+                                       title="Please enter a valid 10-digit phone number"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="owner_address" class="form-label">Owner Address</label>
+                                <textarea class="form-control" 
+                                          id="owner_address" 
+                                          name="owner_address"
+                                          placeholder="Enter address"
+                                          rows="1"
+                                          required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register Vehicle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vehicles List -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Registered Vehicles</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Registration Number</th>
+                                <th>Type</th>
+                                <th>Make & Model</th>
+                                <th>Owner Details</th>
+                                <th>Violations</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vehicle in vehicles %}
+                                <tr>
+                                    <td>{{ vehicle.RegistrationNumber }}</td>
+                                    <td>{{ vehicle.Type }}</td>
+                                    <td>{{ vehicle.Make }} {{ vehicle.Model }}</td>
+                                    <td>
+                                        <strong>{{ vehicle.OwnerName }}</strong><br>
+                                        <small>{{ vehicle.OwnerPhone }}</small><br>
+                                        <small class="text-muted">{{ vehicle.OwnerAddress }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'warning' if vehicle.ViolationCount > 0 else 'success' }}">
+                                            {{ vehicle.ViolationCount }} violation{{ 's' if vehicle.ViolationCount != 1 }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-primary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#editModal{{ vehicle.VehicleID }}">
+                                                Edit
+                                            </button>
+                                            {% if vehicle.ViolationCount == 0 %}
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-danger" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#deleteModal{{ vehicle.VehicleID }}">
+                                                    Delete
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+{% for vehicle in vehicles %}
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal{{ vehicle.VehicleID }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Vehicle: {{ vehicle.RegistrationNumber }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ url_for('edit_vehicle', vehicle_id=vehicle.VehicleID) }}" method="POST">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Registration Number</label>
+                                    <input type="text" class="form-control" value="{{ vehicle.RegistrationNumber }}" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Vehicle Type</label>
+                                    <select class="form-control" name="vehicle_type" required>
+                                        <option value="2-Wheeler" {{ 'selected' if vehicle.Type == '2-Wheeler' }}>2-Wheeler</option>
+                                        <option value="4-Wheeler" {{ 'selected' if vehicle.Type == '4-Wheeler' }}>4-Wheeler</option>
+                                        <option value="Heavy Vehicle" {{ 'selected' if vehicle.Type == 'Heavy Vehicle' }}>Heavy Vehicle</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Make</label>
+                                    <input type="text" class="form-control" name="make" value="{{ vehicle.Make }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Model</label>
+                                    <input type="text" class="form-control" name="model" value="{{ vehicle.Model }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Owner Name</label>
+                                    <input type="text" class="form-control" name="owner_name" value="{{ vehicle.OwnerName }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Owner Phone</label>
+                                    <input type="tel" class="form-control" name="owner_phone" value="{{ vehicle.OwnerPhone }}" pattern="[0-9]{10}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Owner Address</label>
+                                    <textarea class="form-control" name="owner_address" rows="2" required>{{ vehicle.OwnerAddress }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal{{ vehicle.VehicleID }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Delete Vehicle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete vehicle with registration number:</p>
+                    <p class="fw-bold">{{ vehicle.RegistrationNumber }}?</p>
+                    <p class="text-muted mb-0">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('delete_vehicle', vehicle_id=vehicle.VehicleID) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Delete Vehicle</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<style>
+    .badge {
+        padding: 0.5em 1em;
+    }
+    .bg-warning {
+        background-color: #ffc107 !important;
+        color: #000;
+    }
+    .bg-success {
+        background-color: #198754 !important;
+        color: #fff;
+    }
+    .btn-group {
+        display: flex;
+        gap: 0.25rem;
+    }
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+    .btn-danger:hover {
+        background-color: #bb2d3b;
+        border-color: #b02a37;
+    }
+    .modal-header.bg-danger {
+        background-color: #dc3545 !important;
+    }
+    .btn-close-white {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+</style>
+{% endblock %} 
